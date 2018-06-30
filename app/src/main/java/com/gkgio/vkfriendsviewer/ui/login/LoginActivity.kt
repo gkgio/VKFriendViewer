@@ -4,26 +4,28 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.gkgio.vkfriendsviewer.R
+import com.gkgio.vkfriendsviewer.base.BaseActivity
 import com.gkgio.vkfriendsviewer.ui.main.MainActivity
 import com.gkgio.vkfriendsviewer.utils.Config
-import com.gkgio.vkfriendsviewer.utils.Config.TOKEN
 import com.gkgio.vkfriendsviewer.utils.parseRedirectUrl
 import com.gkgio.vkfriendsviewer.utils.saveToken
 import com.gkgio.vkfriendsviewer.utils.snackBar
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
 
   companion object {
     private val TAG = LoginActivity::class.simpleName
   }
+
+  override val layoutRes: Int
+    get() = R.layout.activity_login
 
   lateinit var progress: MaterialProgressBar
   private lateinit var webView: WebView
@@ -31,12 +33,10 @@ class LoginActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_login)
 
     webView = findViewById(R.id.web)
     progress = findViewById(R.id.loginProgressbar)
 
-    webView.settings.javaScriptEnabled = true
     webView.isVerticalScrollBarEnabled = true
     webView.isHorizontalScrollBarEnabled = true
     webView.clearCache(true)

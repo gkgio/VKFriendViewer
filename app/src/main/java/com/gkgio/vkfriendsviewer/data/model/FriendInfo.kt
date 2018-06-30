@@ -15,8 +15,4 @@ class FriendInfo(
 
     @SerializedName("photo_100")
     val photo: String
-) {
-  override fun toString(): String {
-    return "$firstName $lastName"
-  }
-}
+)

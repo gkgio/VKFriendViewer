@@ -7,7 +7,7 @@ object Config {
   const val REDIRECT_URI = "https://oauth.vk.com/blank.html"
   const val RESPONSE_TYPE = "token"
   const val TOKEN = "TOKEN"
-  const val VERSION = "5.78"
+  const val VERSION = "5.80"
   const val SHOW_SPLASH_DELAY_MILLIS = 2000L
   const val UNKNOWN_ERROR = "Unknown error"
 }

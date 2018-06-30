@@ -4,4 +4,5 @@
     <string name="yes">OK</string>
     <string name="error_get_token">Error! Need to login again</string>
     <string name="main_activity_empty_stub">Data is empty</string>
+    <string name="friend_name">%1$s %2$s</string>
 </resources>

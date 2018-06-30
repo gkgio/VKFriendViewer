@@ -28,7 +28,7 @@ class MainPresenter @Inject constructor(private val iService: IService) : MainCo
     if (token != null) {
       view?.showProgress(isSwipeRefresh)
 
-      disposable = iService.getFriends(token, 0)
+      disposable = iService.getFriends("name", "photo_100", "5.80", token)
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe({ res: ApiResponseObject<ApiResponseList<FriendInfo>> ->

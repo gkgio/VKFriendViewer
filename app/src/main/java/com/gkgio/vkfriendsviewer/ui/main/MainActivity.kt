@@ -4,7 +4,9 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 
@@ -25,6 +27,9 @@ class MainActivity : BaseActivity(), MainContract.View {
   private lateinit var emptyItemsStub: TextView
   private lateinit var layoutSwipeRefresh: SwipeRefreshLayout
   private lateinit var progress: MaterialProgressBar
+  private lateinit var rvFriends:RecyclerView
+
+  private lateinit var recyclerFriendsAdapter:RecyclerFriendsAdapter
 
   @Inject
   lateinit var presenter: MainPresenter
@@ -43,6 +48,16 @@ class MainActivity : BaseActivity(), MainContract.View {
     emptyItemsStub = findViewById(R.id.emptyItemsStub)
     layoutSwipeRefresh = findViewById(R.id.layoutSwipeRefresh)
     progress = findViewById(R.id.mainProgressbar)
+    rvFriends = findViewById(R.id.rvFriends)
+
+    val layoutManager = LinearLayoutManager(this)
+    layoutManager.orientation = LinearLayoutManager.VERTICAL
+    rvFriends.layoutManager = layoutManager
+    rvFriends.itemAnimator = DefaultItemAnimator()
+
+    recyclerFriendsAdapter= RecyclerFriendsAdapter()
+    rvFriends.layoutManager = LinearLayoutManager(this)
+    rvFriends.adapter = recyclerFriendsAdapter
 
     layoutSwipeRefresh.setOnRefreshListener {
       presenter.loadFriends(this, true)
@@ -52,6 +67,7 @@ class MainActivity : BaseActivity(), MainContract.View {
 
   override fun showFriends(friends: List<FriendInfo>) {
     if (!friends.isEmpty()) {
+      recyclerFriendsAdapter.setFriends(friends)
       emptyItemsStub.visibility = View.GONE
     } else {
       emptyItemsStub.visibility = View.VISIBLE
