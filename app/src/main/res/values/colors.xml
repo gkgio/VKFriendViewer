@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/white</color>
+    <color name="colorPrimaryDark">@color/black</color>
+    <color name="colorAccent">#d8003f</color>
+
+    <color name="textBlack">#333333</color>
+    <color name="textBlack_50">#80333333</color>
+    <color name="green">#24bf13</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="toolbar_space_line">#b3e9e5e5</color>
+</resources>
