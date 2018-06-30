@@ -2,47 +2,52 @@ package com.gkgio.vkfriendsviewer.ui.main
 
 import android.content.Context
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import com.gkgio.vkfriendsviewer.data.api.IService
 import com.gkgio.vkfriendsviewer.data.model.ApiResponseList
 import com.gkgio.vkfriendsviewer.data.model.ApiResponseObject
 import com.gkgio.vkfriendsviewer.data.model.FriendInfo
-import com.gkgio.vkfriendsviewer.di.scope.PerActivity
 import com.gkgio.vkfriendsviewer.utils.getToken
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 
-@PerActivity
-class MainPresenter<T : MainView> @Inject constructor(private val iService: IService,
-                                                      private val view: T) {
+class MainPresenter @Inject constructor(private val iService: IService) : MainContract.Presenter {
 
-  private var subscription: Disposable? = null
+  private var disposable: Disposable? = null
+  private var view: MainContract.View? = null
 
-  fun loadFriends(context: Context, isSwipeRefresh: Boolean) {
-    subscription?.dispose()
+  override fun attachView(view: MainContract.View) {
+    this.view = view
+  }
+
+  override fun loadFriends(context: Context, isSwipeRefresh: Boolean) {
+    disposable?.dispose()
 
     val token: String? = getToken(context)
     if (token != null) {
-      view.showProgress(isSwipeRefresh)
+      view?.showProgress(isSwipeRefresh)
 
-      subscription = iService.getFriends(token, 0)
+      disposable = iService.getFriends(token, 0)
+          .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe({ res: ApiResponseObject<ApiResponseList<FriendInfo>> ->
-            view.hideProgress()
+            view?.hideProgress()
             if (res.response != null) {
-              view.showFriends(res.response.items)
+              view?.showFriends(res.response.items)
             }
           }, { throwable ->
-            view.hideProgress()
-            view.onError(throwable.message ?: "")
+            view?.hideProgress()
+            view?.onError(throwable.message ?: "")
           })
     } else {
-      view.errorGetToken()
+      view?.errorGetToken()
     }
+
   }
 
-  fun onDetachView() {
-    subscription?.dispose()
+  override fun detachView() {
+    view = null
+    disposable?.dispose()
   }
 }
