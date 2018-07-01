@@ -2,11 +2,9 @@ package com.gkgio.vkfriendsviewer.ui.main.profile
 
 import android.content.Context
 import com.gkgio.vkfriendsviewer.data.api.IService
-import com.gkgio.vkfriendsviewer.data.model.ApiResponseList
 import com.gkgio.vkfriendsviewer.data.model.ApiResponseObject
-import com.gkgio.vkfriendsviewer.data.model.FriendInfo
 import com.gkgio.vkfriendsviewer.data.model.ProfileInfo
-import com.gkgio.vkfriendsviewer.ui.main.MainContract
+import com.gkgio.vkfriendsviewer.utils.Config
 import com.gkgio.vkfriendsviewer.utils.getToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -28,7 +26,7 @@ class ProfilePresenter @Inject constructor(private val iService: IService) : Pro
     if (token != null) {
       view?.showProgress()
 
-      disposable = iService.getProfileInfo("photo_400_orig,city,bdate,education", "5.80", token, id.toString())
+      disposable = iService.getProfileInfo("photo_400_orig,city,bdate,education", Config.VERSION, token, id.toString())
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe({ res: ApiResponseObject<Array<ProfileInfo>> ->

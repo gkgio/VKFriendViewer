@@ -16,7 +16,7 @@ class ProfileInfo(
     val photoOrig: String,
 
     @SerializedName("bdate")
-    val birthdayDate: String,
+    val birthdayDate: String?,
 
     @SerializedName("city")
     val city: City?,

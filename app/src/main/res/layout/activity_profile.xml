@@ -15,8 +15,8 @@
             android:id="@+id/profileToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:titleText="@string/title_activity_profile"
-            app:iconLeft="@drawable/ic_back"/>
+            app:iconLeft="@drawable/ic_back"
+            app:titleText="@string/title_activity_profile" />
 
         <ScrollView
             android:layout_width="match_parent"
@@ -64,7 +64,8 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:textColor="@color/black"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/tvPhoneNumber"

@@ -7,8 +7,6 @@ import android.support.v7.widget.AppCompatImageView
 import android.view.View
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.request.RequestOptions
 import com.gkgio.vkfriendsviewer.R
 import com.gkgio.vkfriendsviewer.base.BaseActivity
 import com.gkgio.vkfriendsviewer.data.model.ProfileInfo
@@ -25,11 +23,14 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import android.os.Environment.DIRECTORY_PICTURES
 import android.os.Environment.getExternalStoragePublicDirectory
-import com.bumptech.glide.Priority
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import java.io.File
 import java.io.FileOutputStream
+import android.os.Build
+import android.support.v4.view.ViewCompat
+import android.transition.Fade
+import android.widget.LinearLayout
+import java.util.*
 
 
 class ProfileActivity : BaseActivity(), ProfileContract.View {
@@ -50,6 +51,8 @@ class ProfileActivity : BaseActivity(), ProfileContract.View {
   private lateinit var tvCity: TextView
   private lateinit var tvBirthdayDate: TextView
   private lateinit var tvPhoneNumber: TextView
+
+  private var savedImagePath: String? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -74,6 +77,10 @@ class ProfileActivity : BaseActivity(), ProfileContract.View {
     if (profileId != -1L) {
       presenter.loadProfile(this, profileId)
     }
+
+    userPhoto.setOnClickListener {
+      openPhotoWholePage()
+    }
   }
 
   override fun showProfile(profile: ProfileInfo) {
@@ -86,7 +93,10 @@ class ProfileActivity : BaseActivity(), ProfileContract.View {
       tvCity.text = resources.getString(R.string.profile_city, profile.city.title)
     }
 
-    tvBirthdayDate.text = resources.getString(R.string.profile_birthday_date, profile.birthdayDate)
+    if (!isEmptyString(profile.birthdayDate)) {
+      tvBirthdayDate.visibility = View.VISIBLE
+      tvBirthdayDate.text = resources.getString(R.string.profile_birthday_date, profile.birthdayDate)
+    }
 
     if (!isEmptyString(profile.universityName)) {
       tvPhoneNumber.visibility = View.VISIBLE
@@ -104,7 +114,7 @@ class ProfileActivity : BaseActivity(), ProfileContract.View {
   }
 
   private fun loadPhotoUseLink(savedFileName: String, link: String) {
-    var savedImagePath: String? = null
+    var savedImagePath: String?
     Glide.with(this)
         .asBitmap()
         .load(link)
@@ -125,6 +135,7 @@ class ProfileActivity : BaseActivity(), ProfileContract.View {
       } else {
         savedImagePath = savedImagePathNew
       }
+      this.savedImagePath = savedImagePath
       Glide.with(this)
           .load(File(savedImagePath))
           .transition(DrawableTransitionOptions.withCrossFade())
@@ -152,6 +163,7 @@ class ProfileActivity : BaseActivity(), ProfileContract.View {
     if (success) {
       val imageFile = File(storageDir, savedFileName)
       savedImagePath = imageFile.absolutePath
+      this.savedImagePath = savedImagePath
       try {
         val fOut = FileOutputStream(imageFile)
         image.compress(Bitmap.CompressFormat.PNG, 100, fOut)
@@ -164,7 +176,28 @@ class ProfileActivity : BaseActivity(), ProfileContract.View {
   }
 
   private fun openPhotoWholePage() {
+    val fragmentManager = supportFragmentManager
+    val wholePagePhotoFragment = WholePagePhotoFragment()
 
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      wholePagePhotoFragment.sharedElementEnterTransition = PhotoOpenTransition()
+      wholePagePhotoFragment.enterTransition = Fade()
+      wholePagePhotoFragment.exitTransition = Fade()
+      wholePagePhotoFragment.sharedElementReturnTransition = PhotoOpenTransition()
+    }
+
+    ViewCompat.setTransitionName(userPhoto, String.format("%d_image", Random().nextInt(1000)))
+
+    val bundle = Bundle()
+    bundle.putString(WholePagePhotoFragment.BUNDLE_FILE_PATH_PHOTO_SAVED, savedImagePath)
+    wholePagePhotoFragment.arguments = bundle
+
+    fragmentManager.beginTransaction()
+        .add(android.R.id.content, wholePagePhotoFragment)
+        .addSharedElement(userPhoto, "profileImage")
+        .addToBackStack(null)
+        .commit()
   }
 
   override fun onError(message: String) {

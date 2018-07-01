@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 
-import dagger.android.support.DaggerAppCompatActivity
 import com.gkgio.vkfriendsviewer.R
 import com.gkgio.vkfriendsviewer.base.BaseActivity
 import com.gkgio.vkfriendsviewer.data.model.FriendInfo
