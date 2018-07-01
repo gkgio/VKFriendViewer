@@ -3,31 +3,39 @@ package com.gkgio.vkfriendsviewer.ui.main.profile
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.widget.AppCompatImageView
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.request.RequestOptions
 import com.gkgio.vkfriendsviewer.R
 import com.gkgio.vkfriendsviewer.base.BaseActivity
-import com.gkgio.vkfriendsviewer.data.model.FriendInfo
 import com.gkgio.vkfriendsviewer.data.model.ProfileInfo
 import com.gkgio.vkfriendsviewer.di.component.DaggerMainComponent
 import com.gkgio.vkfriendsviewer.ui.login.LoginActivity
-import com.gkgio.vkfriendsviewer.ui.main.MainPresenter
+import com.gkgio.vkfriendsviewer.utils.isEmptyString
 import com.gkgio.vkfriendsviewer.utils.showErrorAlertDialog
 import com.gkgio.vkfriendsviewer.utils.snackBar
 import com.gkgio.vkfriendsviewer.widgets.ToolbarOneLine
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 import javax.inject.Inject
+import android.graphics.Bitmap
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
+import android.os.Environment.DIRECTORY_PICTURES
+import android.os.Environment.getExternalStoragePublicDirectory
+import com.bumptech.glide.Priority
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import java.io.File
+import java.io.FileOutputStream
+
 
 class ProfileActivity : BaseActivity(), ProfileContract.View {
   companion object {
-    public const val BUNDLE_PROFILE_ID = "PROFILE_ID"
+    const val BUNDLE_PROFILE_ID = "PROFILE_ID"
+    val storageDir = File(getExternalStoragePublicDirectory(DIRECTORY_PICTURES), "/VK_FOLDER_IMAGE")
   }
 
   @Inject
@@ -73,26 +81,90 @@ class ProfileActivity : BaseActivity(), ProfileContract.View {
         R.string.profile_name,
         profile.firstName, profile.lastName
     )
-    if (profile.city?.title != null) {
+    if (profile.city != null && !isEmptyString(profile.city.title)) {
       tvCity.visibility = View.VISIBLE
       tvCity.text = resources.getString(R.string.profile_city, profile.city.title)
     }
 
     tvBirthdayDate.text = resources.getString(R.string.profile_birthday_date, profile.birthdayDate)
 
-    if (profile.universityName != null) {
+    if (!isEmptyString(profile.universityName)) {
       tvPhoneNumber.visibility = View.VISIBLE
       tvPhoneNumber.text = resources.getString(R.string.profile_phone_number, profile.universityName)
     }
 
+    val savedFileName = String.format("%s%d.png", profile.lastName, profile.id)
+
+    if (!isFileWithPhoto(savedFileName)) {
+      loadPhotoUseLink(savedFileName, profile.photoOrig)
+    } else {
+      loadPhotoUseFilePath(null, savedFileName)
+    }
+
+  }
+
+  private fun loadPhotoUseLink(savedFileName: String, link: String) {
+    var savedImagePath: String? = null
     Glide.with(this)
-        .setDefaultRequestOptions(
-            RequestOptions()
-                .format(DecodeFormat.PREFER_ARGB_8888)
-                .dontAnimate()
-        )
-        .load(profile.photoOrig)
-        .into(userPhoto)
+        .asBitmap()
+        .load(link)
+        .into(object : SimpleTarget<Bitmap>(400, 400) {
+          override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+            savedImagePath = saveImage(resource, savedFileName)
+            loadPhotoUseFilePath(savedImagePath, null)
+          }
+        })
+  }
+
+  private fun loadPhotoUseFilePath(savedImagePathNew: String?, savedFileName: String?) {
+    if (savedImagePathNew != null || savedFileName != null) {
+      val savedImagePath: String
+      if (savedImagePathNew == null) {
+        val imageFile = File(storageDir, savedFileName)
+        savedImagePath = imageFile.absolutePath
+      } else {
+        savedImagePath = savedImagePathNew
+      }
+      Glide.with(this)
+          .load(File(savedImagePath))
+          .transition(DrawableTransitionOptions.withCrossFade())
+          .into(userPhoto)
+    }
+  }
+
+  private fun isFileWithPhoto(savedFileName: String): Boolean {
+    if (!storageDir.exists()) {
+      return false
+    }
+
+    val imageFile = File(storageDir, savedFileName)
+    val savedImagePath = imageFile.absolutePath
+    return File(savedImagePath).exists()
+  }
+
+  private fun saveImage(image: Bitmap, savedFileName: String): String? {
+    var savedImagePath: String? = null
+
+    var success = true
+    if (!storageDir.exists()) {
+      success = storageDir.mkdirs()
+    }
+    if (success) {
+      val imageFile = File(storageDir, savedFileName)
+      savedImagePath = imageFile.absolutePath
+      try {
+        val fOut = FileOutputStream(imageFile)
+        image.compress(Bitmap.CompressFormat.PNG, 100, fOut)
+        fOut.close()
+      } catch (e: Exception) {
+        e.printStackTrace()
+      }
+    }
+    return savedImagePath
+  }
+
+  private fun openPhotoWholePage() {
+
   }
 
   override fun onError(message: String) {

@@ -47,6 +47,10 @@ fun getToken(context: Context): String? {
       .getString(TOKEN, null)
 }
 
+fun isEmptyString(string: String?): Boolean {
+  return string == null || string.isEmpty()
+}
+
 fun parseRedirectUrl(url: String): Array<String> {
   val access_token = extractPattern(url, "access_token=(.*?)&")
   val user_id = extractPattern(url, "user_id=(\\d*)")
