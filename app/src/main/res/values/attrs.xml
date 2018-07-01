@@ -2,6 +2,7 @@
 <resources>
 
     <declare-styleable name="ToolbarOneLineView">
+        <attr name="iconLeft" format="integer" />
         <attr name="titleText" format="string" />
     </declare-styleable>
 </resources>

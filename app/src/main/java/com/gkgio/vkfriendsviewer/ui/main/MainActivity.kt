@@ -16,6 +16,8 @@ import com.gkgio.vkfriendsviewer.base.BaseActivity
 import com.gkgio.vkfriendsviewer.data.model.FriendInfo
 import com.gkgio.vkfriendsviewer.di.component.DaggerMainComponent
 import com.gkgio.vkfriendsviewer.ui.login.LoginActivity
+import com.gkgio.vkfriendsviewer.ui.main.profile.ProfileActivity
+import com.gkgio.vkfriendsviewer.ui.main.profile.ProfileActivity.Companion.BUNDLE_PROFILE_ID
 import com.gkgio.vkfriendsviewer.utils.showErrorAlertDialog
 
 import com.gkgio.vkfriendsviewer.utils.snackBar
@@ -24,18 +26,18 @@ import javax.inject.Inject
 
 class MainActivity : BaseActivity(), MainContract.View {
 
-  private lateinit var emptyItemsStub: TextView
-  private lateinit var layoutSwipeRefresh: SwipeRefreshLayout
-  private lateinit var progress: MaterialProgressBar
-  private lateinit var rvFriends:RecyclerView
-
-  private lateinit var recyclerFriendsAdapter:RecyclerFriendsAdapter
-
   @Inject
   lateinit var presenter: MainPresenter
 
   override val layoutRes: Int
     get() = R.layout.activity_main
+
+  private lateinit var emptyItemsStub: TextView
+  private lateinit var layoutSwipeRefresh: SwipeRefreshLayout
+  private lateinit var progress: MaterialProgressBar
+  private lateinit var rvFriends: RecyclerView
+
+  private lateinit var recyclerFriendsAdapter: RecyclerFriendsAdapter
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -55,7 +57,7 @@ class MainActivity : BaseActivity(), MainContract.View {
     rvFriends.layoutManager = layoutManager
     rvFriends.itemAnimator = DefaultItemAnimator()
 
-    recyclerFriendsAdapter= RecyclerFriendsAdapter()
+    recyclerFriendsAdapter = RecyclerFriendsAdapter(::openProfile)
     rvFriends.layoutManager = LinearLayoutManager(this)
     rvFriends.adapter = recyclerFriendsAdapter
 
@@ -74,8 +76,15 @@ class MainActivity : BaseActivity(), MainContract.View {
     }
   }
 
-  override fun onError(mesage: String) {
-    snackBar(mesage)
+  private fun openProfile(id: Long) {
+    val bundle = Bundle()
+    bundle.putLong(BUNDLE_PROFILE_ID, id)
+    startActivity(Intent(this, ProfileActivity::class.java).putExtras(bundle))
+    overridePendingTransition(R.anim.activity_in, R.anim.activity_out)
+  }
+
+  override fun onError(message: String) {
+    snackBar(message)
   }
 
   override fun errorGetToken() {

@@ -1,8 +1,17 @@
 <resources>
     <string name="app_name">VKFriendsViewer</string>
+
     <string name="title_activity_main">Friends</string>
+    <string name="title_activity_profile">Profile</string>
+
     <string name="yes">OK</string>
     <string name="error_get_token">Error! Need to login again</string>
+
     <string name="main_activity_empty_stub">Data is empty</string>
+
     <string name="friend_name">%1$s %2$s</string>
+    <string name="profile_name">Name: %1$s %2$s</string>
+    <string name="profile_city">City: %1$s</string>
+    <string name="profile_birthday_date">Birthday date: %1$s</string>
+    <string name="profile_phone_number">Education: %1$s</string>
 </resources>

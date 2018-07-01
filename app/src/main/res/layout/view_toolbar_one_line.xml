@@ -1,19 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.AppCompatTextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/textViewTitle"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/toolbarHeight"
-    android:gravity="center"
+    android:layout_height="52dp"
     android:background="@color/colorPrimaryDark"
-    android:maxLines="1"
-    android:textAllCaps="false"
-    android:textColor="@color/white"
-    android:textSize="25sp"
-    app:autoSizeMaxTextSize="25sp"
-    app:autoSizeMinTextSize="16sp"
-    app:autoSizeTextType="uniform"
-    tools:text="АЛРОСА-НОРБА(С)">
+    android:orientation="horizontal">
 
-</android.support.v7.widget.AppCompatTextView>
+    <FrameLayout
+        android:id="@+id/ivLeftContainer"
+        android:layout_width="@dimen/toolbarHeight"
+        android:layout_height="@dimen/toolbarHeight"
+        android:layout_gravity="center"
+        android:background="?attr/selectableItemBackgroundBorderless">
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/iconLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            tools:srcCompat="@drawable/ic_back" />
+
+    </FrameLayout>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        app:autoSizeMaxTextSize="25sp"
+        app:autoSizeMinTextSize="16sp"
+        app:autoSizeTextType="uniform"
+        tools:text="Title" />
+
+    <android.support.v4.widget.Space
+        android:layout_width="@dimen/toolbarHeight"
+        android:layout_height="@dimen/toolbarHeight"
+        android:layout_gravity="center" />
+</LinearLayout>

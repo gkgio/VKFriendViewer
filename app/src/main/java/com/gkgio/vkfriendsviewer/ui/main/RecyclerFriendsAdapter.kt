@@ -1,5 +1,6 @@
 package com.gkgio.vkfriendsviewer.ui.main
 
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -13,7 +14,7 @@ import com.gkgio.vkfriendsviewer.R
 import com.gkgio.vkfriendsviewer.data.model.FriendInfo
 import java.util.ArrayList
 
-class RecyclerFriendsAdapter : RecyclerView.Adapter<RecyclerFriendsAdapter.FriendsItemViewHolder>() {
+class RecyclerFriendsAdapter(val click: (Long) -> Unit) : RecyclerView.Adapter<RecyclerFriendsAdapter.FriendsItemViewHolder>() {
   companion object {
     private val TAG = RecyclerFriendsAdapter::class.java.simpleName
   }
@@ -40,6 +41,14 @@ class RecyclerFriendsAdapter : RecyclerView.Adapter<RecyclerFriendsAdapter.Frien
     val friendInfoList = friendInfoList
     if (friendInfoList != null) {
       val friendInfo = friendInfoList[position]
+
+      holder.itemView.setBackgroundColor(
+          ContextCompat.getColor(context, if (position % 2 == 0) R.color.grey1 else R.color.white)
+      )
+
+      holder.itemView.setOnClickListener {
+        click.invoke(friendInfo.id)
+      }
 
       holder.name.text = context.resources.getString(
           R.string.friend_name,

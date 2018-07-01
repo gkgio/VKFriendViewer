@@ -27,7 +27,7 @@ class LoginActivity : BaseActivity() {
   override val layoutRes: Int
     get() = R.layout.activity_login
 
-  lateinit var progress: MaterialProgressBar
+  private lateinit var progress: MaterialProgressBar
   private lateinit var webView: WebView
   private var vkWebViewClient: VkWebViewClient? = null
 

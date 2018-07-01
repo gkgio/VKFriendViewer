@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,8 +29,6 @@
                     android:id="@+id/rvFriends"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:divider="@color/toolbar_space_line"
-                    android:dividerHeight="1px"
                     android:scrollbars="none" />
 
                 <TextView
@@ -43,16 +42,17 @@
             </FrameLayout>
         </android.support.v4.widget.SwipeRefreshLayout>
 
-        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
-            android:id="@+id/mainProgressbar"
-            style="@style/Widget.MaterialProgressBar.ProgressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminate="true"
-            android:visibility="gone"
-            app:mpb_indeterminateTint="@color/green"
-            app:mpb_progressStyle="circular" />
-
     </LinearLayout>
+
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/mainProgressbar"
+        style="@style/Widget.MaterialProgressBar.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:mpb_indeterminateTint="@color/green"
+        app:mpb_progressStyle="circular" />
+
 </FrameLayout>

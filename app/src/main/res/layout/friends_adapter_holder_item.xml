@@ -14,7 +14,7 @@
         android:layout_weight="1"
         android:gravity="end"
         android:textColor="@color/textBlack"
-        android:textSize="16sp"
+        android:textSize="18sp"
         tools:text="Name Surname" />
 
     <android.support.v7.widget.AppCompatImageView

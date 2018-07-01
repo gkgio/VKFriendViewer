@@ -1,7 +1,6 @@
 package com.gkgio.vkfriendsviewer.data.model
 
 import com.google.gson.annotations.SerializedName
-import com.google.gson.annotations.Expose
 
 class FriendInfo(
     @SerializedName("id")
@@ -14,5 +13,5 @@ class FriendInfo(
     val lastName: String,
 
     @SerializedName("photo_100")
-    val photo: String
+    val photo: String?
 )

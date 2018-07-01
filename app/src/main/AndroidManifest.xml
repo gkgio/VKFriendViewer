@@ -22,6 +22,8 @@
         </activity>
 
         <activity android:name=".ui.login.LoginActivity" />
+
+        <activity android:name=".ui.main.profile.ProfileActivity"/>
     </application>
 
 </manifest>

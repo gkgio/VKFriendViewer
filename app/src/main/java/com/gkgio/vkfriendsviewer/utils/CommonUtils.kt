@@ -1,19 +1,25 @@
 package com.gkgio.vkfriendsviewer.utils
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
 import android.util.Log
 import com.gkgio.vkfriendsviewer.R
 import com.gkgio.vkfriendsviewer.utils.Config.TOKEN
 import java.util.regex.Pattern
 
 fun Activity.snackBar(text: String) = Snackbar.make(this.findViewById(android.R.id.content), text, Snackbar.LENGTH_SHORT)
+
+fun Fragment.snackBar(text: String) {
+  val activity = this.activity
+  if (activity != null) {
+    Snackbar.make(activity.findViewById(android.R.id.content), text, Snackbar.LENGTH_SHORT)
+  }
+}
 
 fun showErrorAlertDialog(
     activity: Activity?,
