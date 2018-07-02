@@ -14,4 +14,5 @@
     <string name="profile_city">City: %1$s</string>
     <string name="profile_birthday_date">Birthday date: %1$s</string>
     <string name="profile_phone_number">Education: %1$s</string>
+    <string name="granted_permission_error">Permission saved file not granted</string>
 </resources>

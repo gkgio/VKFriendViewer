@@ -83,7 +83,7 @@ class MainActivity : BaseActivity(), MainContract.View {
   }
 
   override fun onError(message: String) {
-    snackBar(message)
+    snackBar(message).show()
   }
 
   override fun errorGetToken() {

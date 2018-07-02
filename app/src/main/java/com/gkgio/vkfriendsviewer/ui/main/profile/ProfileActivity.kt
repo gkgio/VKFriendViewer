@@ -1,7 +1,9 @@
 package com.gkgio.vkfriendsviewer.ui.main.profile
 
+import android.Manifest
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v7.widget.AppCompatImageView
 import android.view.View
@@ -12,9 +14,6 @@ import com.gkgio.vkfriendsviewer.base.BaseActivity
 import com.gkgio.vkfriendsviewer.data.model.ProfileInfo
 import com.gkgio.vkfriendsviewer.di.component.DaggerMainComponent
 import com.gkgio.vkfriendsviewer.ui.login.LoginActivity
-import com.gkgio.vkfriendsviewer.utils.isEmptyString
-import com.gkgio.vkfriendsviewer.utils.showErrorAlertDialog
-import com.gkgio.vkfriendsviewer.utils.snackBar
 import com.gkgio.vkfriendsviewer.widgets.ToolbarOneLine
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 import javax.inject.Inject
@@ -27,9 +26,11 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import java.io.File
 import java.io.FileOutputStream
 import android.os.Build
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewCompat
 import android.transition.Fade
-import android.widget.LinearLayout
+import com.gkgio.vkfriendsviewer.utils.*
+import com.tbruyelle.rxpermissions2.RxPermissions
 import java.util.*
 
 
@@ -105,12 +106,19 @@ class ProfileActivity : BaseActivity(), ProfileContract.View {
 
     val savedFileName = String.format("%s%d.png", profile.lastName, profile.id)
 
-    if (!isFileWithPhoto(savedFileName)) {
-      loadPhotoUseLink(savedFileName, profile.photoOrig)
-    } else {
-      loadPhotoUseFilePath(null, savedFileName)
-    }
-
+    val rxPermissions = RxPermissions(this);
+    rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        .subscribe {
+          if (it) {
+            if (!isFileWithPhoto(savedFileName)) {
+              loadPhotoUseLink(savedFileName, profile.photoOrig)
+            } else {
+              loadPhotoUseFilePath(null, savedFileName)
+            }
+          } else {
+            loadPhotoUseLinkNotSave(profile.photoOrig)
+          }
+        }
   }
 
   private fun loadPhotoUseLink(savedFileName: String, link: String) {
@@ -141,6 +149,13 @@ class ProfileActivity : BaseActivity(), ProfileContract.View {
           .transition(DrawableTransitionOptions.withCrossFade())
           .into(userPhoto)
     }
+  }
+
+  private fun loadPhotoUseLinkNotSave(link: String) {
+    Glide.with(this)
+        .load(link)
+        .transition(DrawableTransitionOptions.withCrossFade())
+        .into(userPhoto)
   }
 
   private fun isFileWithPhoto(savedFileName: String): Boolean {
@@ -176,32 +191,36 @@ class ProfileActivity : BaseActivity(), ProfileContract.View {
   }
 
   private fun openPhotoWholePage() {
-    val fragmentManager = supportFragmentManager
-    val wholePagePhotoFragment = WholePagePhotoFragment()
+    if (ContextCompat.checkSelfPermission(this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+      val fragmentManager = supportFragmentManager
+      val wholePagePhotoFragment = WholePagePhotoFragment()
 
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        wholePagePhotoFragment.sharedElementEnterTransition = PhotoOpenTransition()
+        wholePagePhotoFragment.enterTransition = Fade()
+        wholePagePhotoFragment.exitTransition = Fade()
+        wholePagePhotoFragment.sharedElementReturnTransition = PhotoOpenTransition()
+      }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      wholePagePhotoFragment.sharedElementEnterTransition = PhotoOpenTransition()
-      wholePagePhotoFragment.enterTransition = Fade()
-      wholePagePhotoFragment.exitTransition = Fade()
-      wholePagePhotoFragment.sharedElementReturnTransition = PhotoOpenTransition()
+      ViewCompat.setTransitionName(userPhoto, String.format("%d_image", Random().nextInt(1000)))
+
+      val bundle = Bundle()
+      bundle.putString(WholePagePhotoFragment.BUNDLE_FILE_PATH_PHOTO_SAVED, savedImagePath)
+      wholePagePhotoFragment.arguments = bundle
+
+      fragmentManager.beginTransaction()
+          .add(android.R.id.content, wholePagePhotoFragment)
+          .addSharedElement(userPhoto, "profileImage")
+          .addToBackStack(null)
+          .commit()
+    }else{
+      onError(getString(R.string.granted_permission_error))
     }
-
-    ViewCompat.setTransitionName(userPhoto, String.format("%d_image", Random().nextInt(1000)))
-
-    val bundle = Bundle()
-    bundle.putString(WholePagePhotoFragment.BUNDLE_FILE_PATH_PHOTO_SAVED, savedImagePath)
-    wholePagePhotoFragment.arguments = bundle
-
-    fragmentManager.beginTransaction()
-        .add(android.R.id.content, wholePagePhotoFragment)
-        .addSharedElement(userPhoto, "profileImage")
-        .addToBackStack(null)
-        .commit()
   }
 
   override fun onError(message: String) {
-    snackBar(message)
+    snackBar(message).show()
   }
 
   override fun errorGetToken() {
