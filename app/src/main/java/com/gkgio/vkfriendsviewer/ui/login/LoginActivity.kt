@@ -93,14 +93,14 @@ class LoginActivity : BaseActivity() {
           startActivity(Intent(this, MainActivity::class.java))
           finish()
         } else {
-          snackBar(Config.UNKNOWN_ERROR)
+          snackBar(Config.UNKNOWN_ERROR).show()
         }
       } else if (url.contains("error?err")) {
-        snackBar(Config.UNKNOWN_ERROR)
+        snackBar(Config.UNKNOWN_ERROR).show()
       }
     } catch (e: Exception) {
       Log.d(TAG, Config.UNKNOWN_ERROR)
-      snackBar(Config.UNKNOWN_ERROR)
+      snackBar(Config.UNKNOWN_ERROR).show()
     }
 
   }
